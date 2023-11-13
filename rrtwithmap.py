@@ -5,22 +5,16 @@ import csv
 import time
 
 ###########################################
-## node = 5 
-## map px 
 
 ## RRT Algorithm
 class Node:
-    def __init__(self, x, y, root=None):
-        self.root = root
+    def __init__(self, x, y):
         self.x = x
         self.y = y
         self.parent = None
 
     def __str__(self):
         return f"Node({self.x}, {self.y})"
-    
-    def distance_between(self, other_node):
-        return np.linalg.norm([self.x - other_node.x, self.y - other_node.y])
 
 class RRT:
     def __init__(self, map_width, map_height):
@@ -57,19 +51,6 @@ class RRT:
         if node.x < 0 or node.x >= self.map_width or node.y < 0 or node.y >= self.map_height or self.map[node.y, node.x] == 1:
             return False
         return True
-    
-    def find_nearest(self, target):
-        nearest = self.root
-        min_distance = nearest.distance_between(target)
-        for node in nearest.connected_nodes():
-            sub_tree = self(node)
-            candidate = sub_tree.find_nearest(target)
-            distance = candidate.distance_between(target)
-            if distance < min_distance:
-                nearest = candidate
-                min_distance = distance
-        return nearest
-        
 
     def extend_tree(self, max_dist=0.1):
         random_node = self.generate_random_node()
@@ -99,16 +80,15 @@ class RRT:
     def rrt_path_planning(self, start, goal, max_iterations=1000):
         self.tree = [start] #初期ツリーはスタート点
         for _ in range(max_iterations):
-            goal_node = goal
-            next_node = self.generate_random_node()
+            goal_node = self.generate_random_node()
             #print(f"{goal_node}")
 
-            if self.is_collision_free(next_node):
-                if next_node not in self.tree:
-                    self.tree.append(next_node)
+            if self.is_collision_free(goal_node):
+                if goal_node not in self.tree:
+                    self.tree.append(goal_node)
 
                     # 現在のツリーから目標に一番近いノードを探す
-                    nearest_to_goal = self.find_nearest(goal_node)
+                    nearest_to_goal = min(self.tree, key=lambda n: np.linalg.norm([n.x - goal.x, n.y - goal.y]))
                     #print(f"{nearest_to_goal}")
                     #探したノードが目標地点と一定距離以内であれば、最終的経路を生成しリターンする
                     if np.linalg.norm([nearest_to_goal.x - goal.x, nearest_to_goal.y - goal.y]) < 0.1:
