@@ -1,5 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import datetime
+import csv
 
 class Node:
     def __init__(self, x, y):
@@ -165,8 +168,12 @@ class ImageMap:
         if path:
             self.image_path_x, self.image_path_y = zip(*[(x, y) for x, y in path])
 
-    def visualize_map(self):
-        plt.figure(figsize=(6, 6))
+    def visualize_map(self, filename):
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # Format: YYYYMMDDHHMMSS
+        filename_ts = f"{filename}_{timestamp}.png"
+
+        fig = plt.figure(figsize=(6, 6))
+        canvas = FigureCanvas(fig)
 
         # Image map 視覚化
         plt.imshow(self.image_map.map, cmap='gray', origin='lower', extent=[self.image_map_origin[0], self.image_map.map_width, self.image_map_origin[1], self.image_map.map_height])
@@ -180,6 +187,9 @@ class ImageMap:
         plt.ylabel('Y')
         plt.legend()
         plt.show()
+
+        # Save the map as an image file
+        canvas.print_figure(filename_ts, format='png')
 
 
 # Example usage:
@@ -203,7 +213,15 @@ if path:
 
     # マップ・パスを視覚化
     image_map = ImageMap(world_map, path, map_width, map_height)
-    image_map.visualize_map()
+    image_map.visualize_map('map_image')
+
+    # Save the coordinates as a CSV file with timestamp
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # Format: YYYYMMDDHHMMSS
+    csv_filename_with_timestamp = f"coordinates_{timestamp}.csv"
+    with open(csv_filename_with_timestamp, 'w', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerow(['Y', 'X'])  # Header row
+        csvwriter.writerows(path)
 
 else:
     print("Path not found.")
