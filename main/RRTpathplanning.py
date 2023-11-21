@@ -1,31 +1,11 @@
 import numpy as np
-import matplotlib.pyplot as plt
+import datetime
+import csv
+import os
+from WorldMap import WorldMap
+from Node import Node
+from ImageMap import ImageMap
 
-class Node:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.parent = None
-    
-    def __str__(self):
-        return f"Node: ({self.x}, {self.y})"
-
-class WorldMap:
-    def __init__(self, map_width, map_height):
-        self.map_width = map_width
-        self.map_height = map_height
-        self.y_coords, self.x_coords = np.meshgrid(np.arange(0, map_height), np.arange(0, map_width), indexing='ij')
-        self.map = np.zeros((map_width, map_height))
-
-        #障害物の座標
-        self.obstacle_rect1 = (15, 45, 20, 40) #left, up         (x,y) = (15:45, 20:40)
-        self.obstacle_rect2 = (70, 90, 40, 80) #right            (x,y) = (70:90, 40:80)
-        self.obstacle_rect3 = (20, 50, 70, 90) #left, down       (x,y) = (20:50, 70:90)
-
-        #障害物生成 map[y, x]
-        self.map[self.obstacle_rect1[2]:self.obstacle_rect1[3], self.obstacle_rect1[0]:self.obstacle_rect1[1]] = 1
-        self.map[self.obstacle_rect2[2]:self.obstacle_rect2[3], self.obstacle_rect2[0]:self.obstacle_rect2[1]] = 1
-        self.map[self.obstacle_rect3[2]:self.obstacle_rect3[3], self.obstacle_rect3[0]:self.obstacle_rect3[1]] = 1
 
 class RRT:
     def __init__(self, world_map, start):
@@ -150,38 +130,6 @@ class RRT:
         return path[::-1]
 
 
-class ImageMap:
-    def __init__(self, world_map, path, map_width, map_height):
-        #イメージ座標系でマップを生成
-        self.y_coords, self.x_coords = np.meshgrid(np.arange(0, map_height), np.arange(0, map_width), indexing='ij')
-        self.image_map = world_map
-        self.image_map.map_width = map_width 
-        self.image_map.map_height = map_height
-        self.image_map.x = self.image_map.x_coords
-        self.image_map.y = -self.image_map.y_coords + self.image_map.map_height
-        self.image_map_origin = (0, 0) 
-
-        #イメージ座標系でパスを生成
-        if path:
-            self.image_path_x, self.image_path_y = zip(*[(x, y) for x, y in path])
-
-    def visualize_map(self):
-        plt.figure(figsize=(6, 6))
-
-        # Image map 視覚化
-        plt.imshow(self.image_map.map, cmap='gray', origin='lower', extent=[self.image_map_origin[0], self.image_map.map_width, self.image_map_origin[1], self.image_map.map_height])
-
-        # RRT path 視覚化
-        if hasattr(self, 'image_path_x') and hasattr(self, 'image_path_y'):
-            plt.plot(self.image_path_y, self.image_path_x, '-ro', label='RRT Path')
-
-        plt.title('World Map with RRT Path')
-        plt.xlabel('X')
-        plt.ylabel('Y')
-        plt.legend()
-        plt.show()
-
-
 # Example usage:
 map_width = 100
 map_height = 100
@@ -203,7 +151,22 @@ if path:
 
     # マップ・パスを視覚化
     image_map = ImageMap(world_map, path, map_width, map_height)
-    image_map.visualize_map()
+    image_map.visualize_map('map_image')
+
+    # CSVファイルを保存
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # Format: YYYYMMDDHHMMSS
+    csv_filename_with_timestamp = f"coordinates_{timestamp}.csv"
+
+    # ファイルをセーブするパスを設定
+    save_directory = r"C:\MJ\github\path"
+
+    # ディレクトリーのパス生成
+    full_path = os.path.join(save_directory, csv_filename_with_timestamp)
+
+    with open(csv_filename_with_timestamp, 'w', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerow(['Y', 'X'])
+        csvwriter.writerows(path)
 
 else:
     print("Path not found.")
