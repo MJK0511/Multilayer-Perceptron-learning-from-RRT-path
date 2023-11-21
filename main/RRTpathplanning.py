@@ -1,7 +1,4 @@
 import numpy as np
-import datetime
-import csv
-import os
 from WorldMap import WorldMap
 from Node import Node
 from ImageMap import ImageMap
@@ -23,6 +20,7 @@ class RRT:
     def add_node(self, x, y, parent):
         node = Node(x, y)
         node.parent = parent
+        parent.children.append(node)
         self.tree.append(node)
         return node
 
@@ -45,26 +43,74 @@ class RRT:
             return slope, intercept
         else:
             # 直線が垂直である場合
-            return float('inf'), x1
+            slope = float('inf')
+            intercept = float('inf') if y2 > y1 else float('-inf')
+            return slope, intercept
         
 
     def is_collision_free_rectangle(self, parent_node, new_node, obstacle_rect):
-        # 親ノードと子ノードの間の直線方程式を計算
-        slope, intercept = self.calculate_line_equation(parent_node, new_node)
-
-        # 障害物の頂点座標
         x1, y1, x2, y2 = obstacle_rect[0], obstacle_rect[2], obstacle_rect[1], obstacle_rect[3]
-        x3, y3, x4, y4 = x1, y2, x2, y1
 
-        # すべての頂点が直線の上にあればTrue
-        above_line = all([y > slope * x + intercept for x, y in [(x1, y1), (x2, y2), (x3, y3), (x4, y4)]])
-    
-        return above_line
+        # ラインセグメントが長方形の辺と交差するか確認
+        if self.do_line_segments_intersect(x1, y1, x2, y2, parent_node.x, parent_node.y, new_node.x, new_node.y):
+            return False
+
+        if self.do_line_segments_intersect(x2, y2, x1, y1, parent_node.x, parent_node.y, new_node.x, new_node.y):
+            return False
+
+        if self.do_line_segments_intersect(x1, y1, x1, y2, parent_node.x, parent_node.y, new_node.x, new_node.y):
+            return False
+
+        if self.do_line_segments_intersect(x1, y2, x2, y2, parent_node.x, parent_node.y, new_node.x, new_node.y):
+            return False
+
+        if self.do_line_segments_intersect(x2, y2, x2, y1, parent_node.x, parent_node.y, new_node.x, new_node.y):
+            return False
+
+        if self.do_line_segments_intersect(x2, y1, x1, y1, parent_node.x, parent_node.y, new_node.x, new_node.y):
+            return False
+
+        return True
+
+    def do_line_segments_intersect(self, x1, y1, x2, y2, x3, y3, x4, y4):
+        # 二つの線分が交差しているか確認
+        def orientation(x1, y1, x2, y2, x3, y3):
+            val = (y2 - y1) * (x3 - x2) - (x2 - x1) * (y3 - y2)
+            if val == 0:
+                return 0  # 同一線上
+            return 1 if val > 0 else 2  # 時計回りまたは反時計回り
+
+        o1 = orientation(x1, y1, x2, y2, x3, y3)
+        o2 = orientation(x1, y1, x2, y2, x4, y4)
+        o3 = orientation(x3, y3, x4, y4, x1, y1)
+        o4 = orientation(x3, y3, x4, y4, x2, y2)
+
+        # 一般的ケース
+        if o1 != o2 and o3 != o4:
+            return True
+
+        # 特殊ケース
+        if o1 == 0 and self.on_line_segment(x1, y1, x2, y2, x3, y3):
+            return True
+        if o2 == 0 and self.on_line_segment(x1, y1, x2, y2, x4, y4):
+            return True
+        if o3 == 0 and self.on_line_segment(x3, y3, x4, y4, x1, y1):
+            return True
+        if o4 == 0 and self.on_line_segment(x3, y3, x4, y4, x2, y2):
+            return True
+
+        return False
+
+    def on_line_segment(self, x1, y1, x2, y2, x, y):
+        # 点 (x, y) が線分 (x1, y1) から (x2, y2) に存在するか確認
+        return (x <= max(x1, x2) and x >= min(x1, x2) and
+                y <= max(y1, y2) and y >= min(y1, y2))
+
 
 
     #ランダムに座標を生成
     def generate_random_point(self):
-        max_attempts = 1000  # Set a limit on the number of attempts to avoid infinite loop
+        max_attempts = 1000  # 無限ループを避けるための試行回数の上限を設定
         for _ in range(max_attempts):
             x = np.random.randint(0, self.map_width)
             y = np.random.randint(0, self.map_height)
@@ -73,20 +119,22 @@ class RRT:
             if self.is_collision_free(x, y):
                 return x, y
 
-    # If no collision-free point is found after the maximum attempts, return None
+    # 最大試行回数後に衝突のない点が見つからない場合は、Noneを返す
         return None
 
     #一番近いノードを探す
     def find_nearest_node(self, x, y):
         #距離計算
         distances = [np.sqrt((node.x - x)**2 + (node.y - y)**2) for node in self.tree]
-        #最小値を出す
-        min_index = np.argmin(distances)
+        #最小距離のノードを探す
+        min_indices = np.where(distances == np.min(distances))[0]
+        #最小距離のノードの中でランダムに選択
+        min_index = np.random.choice(min_indices)
         return self.tree[min_index]
 
     #パス生成
     #step_sizeでwaypointの数を調整できる
-    def plan_path(self, goal, max_iter=1000, step_size=20):
+    def plan_path(self, goal, waypoint_count, max_iter=10000, step_size=25, ):
         for _ in range(max_iter):
             #ランダムな点 (x_rand, y_rand) を生成
             x_rand, y_rand = self.generate_random_point()
@@ -116,57 +164,24 @@ class RRT:
             #新しいノードが目標に十分に近い場合、目標ノードをツリーに追加し、計画されたパスを返す
             if np.sqrt((new_node.x - goal[0])**2 + (new_node.y - goal[1])**2) < step_size:
                 goal_node = self.add_node(goal[1], goal[0], new_node)
-                return self.extract_path(goal_node)
+                return self.extract_path(goal_node, waypoint_count)
+            
+            if len(n.children) >= waypoint_count:
+                return self.extract_path(n, waypoint_count)
+    
 
         return None
 
     #パスを抽出
-    def extract_path(self, goal_node):
+    def extract_path(self, goal_node, waypoint_count):
         path = []
         current_node = goal_node
-        while current_node is not None:
+        waypoints_added = 0
+
+        while current_node is not None and waypoints_added < waypoint_count:
             path.append((current_node.y, current_node.x))
             current_node = current_node.parent
+            waypoints_added += 1
+
         return path[::-1]
-
-
-# Example usage:
-map_width = 100
-map_height = 100
-start = (1, 1)
-goal = (99, 99)
-
-world_map = WorldMap(map_width, map_height)
-
-rrt = RRT(world_map, start)
-path = rrt.plan_path(goal)
-
-if path:
-    print("Path : [y,x]")
-    print(path)
-
-    print("Values at Path[y,x]:")
-    values_at_path = [rrt.map[node[0], node[1]] for node in path]
-    print(values_at_path)
-
-    # マップ・パスを視覚化
-    image_map = ImageMap(world_map, path, map_width, map_height)
-    image_map.visualize_map('map_image')
-
-    # CSVファイルを保存
-    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # Format: YYYYMMDDHHMMSS
-    csv_filename_with_timestamp = f"coordinates_{timestamp}.csv"
-
-    # ファイルをセーブするパスを設定
-    save_directory = r"C:\MJ\github\path"
-
-    # ディレクトリーのパス生成
-    full_path = os.path.join(save_directory, csv_filename_with_timestamp)
-
-    with open(csv_filename_with_timestamp, 'w', newline='') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(['Y', 'X'])
-        csvwriter.writerows(path)
-
-else:
-    print("Path not found.")
+    

@@ -7,9 +7,9 @@ class WorldMap:
         self.map = np.zeros((map_width, map_height))
 
         #障害物の座標
-        self.obstacle_rect1 = (15, 45, 20, 40) #left, up         (x,y) = (15:45, 20:40)
-        self.obstacle_rect2 = (70, 90, 40, 80) #right            (x,y) = (70:90, 40:80)
-        self.obstacle_rect3 = (20, 50, 70, 90) #left, down       (x,y) = (20:50, 70:90)
+        self.obstacle_rect1 = (15, 35, 25, 45) #left, down       (x,y) = (15:45, 20:40)
+        self.obstacle_rect2 = (80, 90, 30, 60) #right            (x,y) = (70:90, 40:80)
+        self.obstacle_rect3 = (20, 50, 70, 90) #left, up         (x,y) = (20:50, 70:90)
 
         #障害物生成 map[y, x]
         self.map[self.obstacle_rect1[2]:self.obstacle_rect1[3], self.obstacle_rect1[0]:self.obstacle_rect1[1]] = 1

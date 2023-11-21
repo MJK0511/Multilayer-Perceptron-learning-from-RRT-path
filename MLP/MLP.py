@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.special
-import pandas as pd
+
 
 class neuralNetwork:
     def __init__(self, inputnodes, hiddennodes, outputnodes, learningrate):
@@ -66,35 +66,3 @@ class neuralNetwork:
         final_outputs = self.activation_function(final_inputs)
 
         return final_outputs
-
-#example_usage
-
-# CSV ファイルからデータの読み込み
-file_path = 'coordinates_20231120143631.csv'
-data = pd.read_csv(file_path)
-
-# 入力データと目標データ設定
-input_data = data[['X', 'Y']].values
-output_data = data[['X', 'Y']].values  # 目標は入力と同じく（例題なので任意）
-
-# ニューラルネットワークの構成
-input_nodes = 2
-hidden_nodes = 10
-output_nodes = 2
-learning_rate = 0.01
-epochs = 1000
-
-n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
-
-# データ学習
-for epoch in range(epochs):
-    for i in range(len(input_data)):
-        inputs = input_data[i]
-        targets = output_data[i]
-        n.train(inputs, targets)
-
-# テスト：学習されたニューラルネットワークを利用して予測
-test_input = np.array([[1, 1], [4, 21], [5, 41]])
-for input_point in test_input:
-    predicted_output = n.query(input_point)
-    print(f"Input: {input_point}, Predicted Output: {predicted_output}")

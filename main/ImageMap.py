@@ -1,7 +1,9 @@
 import numpy as np
+import datetime
+import os
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-import datetime
+
 
 class ImageMap:
     def __init__(self, world_map, path, map_width, map_height):
@@ -19,8 +21,8 @@ class ImageMap:
             self.image_path_x, self.image_path_y = zip(*[(x, y) for x, y in path])
 
     def visualize_map(self, filename):
-        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # Format: YYYYMMDDHHMMSS
-        filename_ts = f"{filename}_{timestamp}.png"
+        self.timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # Format: YYYYMMDDHHMMSS
+        filename_ts = os.path.join("C:\MJ\github\path", f"map_{self.timestamp}.png")
 
         fig = plt.figure(figsize=(6, 6))
         canvas = FigureCanvas(fig)
@@ -38,5 +40,5 @@ class ImageMap:
         plt.legend()
         plt.show()
 
-        # Save the map as an image file
+        # pngでマップを保存
         canvas.print_figure(filename_ts, format='png')
