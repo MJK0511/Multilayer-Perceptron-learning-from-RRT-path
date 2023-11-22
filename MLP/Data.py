@@ -25,7 +25,7 @@ class TrainingData():
 class TestData():
     def __init__(self):
         test_directory = '/home/nishidalab07/github/RRT/test_path/'
-        test_file_path = os.path.join(test_directory, 'coordinates_f20231121183359.csv')
+        test_file_path = os.path.join(test_directory, 'Test.csv')
 
         # テストデータCSVファイル読み込み
         self.test_data = pd.read_csv(test_file_path)
