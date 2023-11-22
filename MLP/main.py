@@ -1,19 +1,20 @@
 import numpy as np
-import pandas as pd
 from MLP import neuralNetwork
-from Data import TrainingData
-from Data import TestData
+from Data import TrainingData, TestData
 
+#学習データ準備
 traindata = TrainingData()
+train_inputs = traindata.all_train_data[['s', 'm1', 'm2', 'm3', 'm4', 'm5', 'g']].values
+train_outputs = traindata.all_train_data[['m1', 'm2', 'm3', 'm4', 'm5']].values
 
-# 入力データと目標データ設定
-input_data = traindata.all_train_data[['X', 'Y']].values
-output_data = traindata.all_train_data[['X', 'Y']].values # 目標は入力と同じく（例題なので任意）
+#テストデータ準備
+testdata = TestData()
+test_inputs = testdata.test_data[['start', 'goal']].values
 
 # ニューラルネットワークの構成
-input_nodes = 2
+input_nodes = 7
 hidden_nodes = 9
-output_nodes = 2
+output_nodes = 5
 learning_rate = 0.01
 epochs = 1000
 
@@ -21,13 +22,12 @@ n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
 # データ学習
 for epoch in range(epochs):
-    for i in range(len(input_data)):
-        inputs = input_data[i]
-        targets = output_data[i]
+    for i in range(len(train_inputs)):
+        inputs = train_inputs[i]
+        targets = train_outputs[i]
         n.train(inputs, targets)
 
-# テスト：学習されたニューラルネットワークを利用して予測
-testdata = TestData()
-for input_point in testdata.test_input:
-    predicted_output = n.query(input_point)
-    print(f"Input: {input_point}, Predicted Output: {predicted_output}")
+# テスト
+for input_pair in test_inputs:
+    predicted_output = n.query(input_pair)
+    print(f"Start: {input_pair[0]}, Goal: {input_pair[1]}, Predicted Middle Coordinates: {predicted_output}")

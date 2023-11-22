@@ -1,8 +1,8 @@
 import numpy as np
 import scipy.special
 
-
 class neuralNetwork:
+    #ニューラルネットワークの初期化
     def __init__(self, inputnodes, hiddennodes, outputnodes, learningrate):
         # 入力層、隠れ層、出力層のノード数設定
         self.inodes = inputnodes
@@ -15,7 +15,7 @@ class neuralNetwork:
         # w12 w22 など
         self.wih = np.random.normal(0.0, pow(self.hnodes, -0.5), (self.hnodes, self.inodes))
         self.who = np.random.normal(0.0, pow(self.onodes, -0.5), (self.onodes, self.hnodes))
-
+        
             # 学習率の設定
         self.lr = learningrate
 
@@ -24,6 +24,7 @@ class neuralNetwork:
             
     pass
 
+    #ニューラルネットワークの学習
     def train(self, inputs_list, targets_list):
         inputs = np.array(inputs_list, ndmin=2).T
         targets = np.array(targets_list, ndmin=2).T
@@ -50,7 +51,8 @@ class neuralNetwork:
         self.wih += self.lr * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), np.transpose(inputs))
 
         pass
-
+    
+    #ニューラルネットワークの照会
     def query(self, inputs_list):
         #入力リストを行列に変換
         inputs = np.array(inputs_list, ndmin=2).T
