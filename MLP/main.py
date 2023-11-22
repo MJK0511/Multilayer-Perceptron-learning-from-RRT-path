@@ -4,17 +4,17 @@ from Data import TrainingData, TestData
 
 #学習データ準備
 traindata = TrainingData()
-train_inputs = traindata.all_train_data[['s', 'm1', 'm2', 'm3', 'm4', 'm5', 'g']].values
-train_outputs = traindata.all_train_data[['m1', 'm2', 'm3', 'm4', 'm5']].values
+train_inputs = traindata.all_train_data[['s', 'm1', 'm2', 'm3', 'm4', 'm5', 'm6', 'g']].values
+train_outputs = traindata.all_train_data[['m1', 'm2', 'm3', 'm4', 'm5', 'm6']].values
 
 #テストデータ準備
 testdata = TestData()
-test_inputs = testdata.test_data[['start', 'goal']].values
+test_inputs = testdata.test_data[['s', 'g']].values
 
 # ニューラルネットワークの構成
-input_nodes = 7
-hidden_nodes = 9
-output_nodes = 5
+input_nodes = 8
+hidden_nodes = 17
+output_nodes = 8
 learning_rate = 0.01
 epochs = 1000
 
@@ -28,6 +28,10 @@ for epoch in range(epochs):
         n.train(inputs, targets)
 
 # テスト
+
 for input_pair in test_inputs:
-    predicted_output = n.query(input_pair)
-    print(f"Start: {input_pair[0]}, Goal: {input_pair[1]}, Predicted Middle Coordinates: {predicted_output}")
+    print(input_pair)
+    predicted_middle_coordinates = n.query(input_pair)
+    start_goal_pair = np.append(input_pair, predicted_middle_coordinates)
+    print(f"Start: {input_pair[0]}, Goal: {input_pair[7]}, Predicted Middle Coordinates: {predicted_middle_coordinates}")
+    print("Complete Pair:", start_goal_pair)

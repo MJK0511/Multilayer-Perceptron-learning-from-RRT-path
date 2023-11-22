@@ -21,6 +21,7 @@ class neuralNetwork:
 
         # 活性化関数：sigmoid
         self.activation_function = lambda x: scipy.special.expit(x)
+        #self.activation_function = lambda x: x  # 항등 함수
             
     pass
 
@@ -38,7 +39,7 @@ class neuralNetwork:
         final_inputs = np.dot(self.who, hidden_outputs)
         # 出力層で結合された信号を活性化関数により出力
         final_outputs = self.activation_function(final_inputs)
-
+        
         # 出力層の誤差　＝（目標出力ー最終出力）
         output_errors = targets-final_outputs
         # 隠れ層の誤差は出力層の誤差をリンクの重みの割合で分配
@@ -66,5 +67,5 @@ class neuralNetwork:
         final_inputs = np.dot(self.who, hidden_outputs)
         # 出力層で結合された信号を活性化関数により出力
         final_outputs = self.activation_function(final_inputs)
-
+        
         return final_outputs
