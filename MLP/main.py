@@ -24,7 +24,6 @@ for epoch in range(epochs):
         inputs = train_inputs[i]
         targets = train_outputs[i]
         n.train(inputs, targets)
-        # print(f"Epoch {epoch+1}/{epochs}, Loss: {n.loss}")
 
 
 #テストデータ準備

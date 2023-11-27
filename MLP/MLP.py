@@ -22,7 +22,7 @@ class neuralNetwork:
         self.lr = learningrate
 
         # 活性化関数 
-        self.activation_function = self.relu
+        self.activation_function = self.identity
 
         pass
     
@@ -38,7 +38,6 @@ class neuralNetwork:
     def mse_loss(self, targets, outputs):
         # return np.mean((targets - outputs) **2)
         return (targets - outputs) / len(targets)
-
 
     #ニューラルネットワークの学習
     def train(self, inputs_list, targets_list):
