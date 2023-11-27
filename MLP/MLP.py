@@ -10,14 +10,19 @@ class neuralNetwork:
 
         # リンクの重み行列wih(weights input hidden)とwho(weights hidden output)
         # 行列内の重みw_i_j, ノードiから次の層のノードjへのリンクの重み
-        self.wih = np.random.normal(0.0, pow(self.hnodes, -0.5), (self.hnodes, self.inodes))
-        self.who = np.random.normal(0.0, pow(self.onodes, -0.5), (self.onodes, self.hnodes))
+        # He
+        self.wih = np.random.randn(self.hnodes, self.inodes) * np.sqrt(2.0 / self.inodes)
+        self.who = np.random.randn(self.onodes, self.hnodes) * np.sqrt(2.0 / self.hnodes)
 
+        #bias 
+        self.bias_h = np.zeros((self.hnodes, 1))
+        self.bias_o = np.zeros((self.onodes, 1))
+        
         # 学習率の設定
         self.lr = learningrate
 
         # 活性化関数 
-        self.activation_function = self.sigmoid
+        self.activation_function = self.relu
 
         pass
     
@@ -31,7 +36,9 @@ class neuralNetwork:
         return x
     
     def mse_loss(self, targets, outputs):
-        return np.mean((targets - outputs) **2)
+        # return np.mean((targets - outputs) **2)
+        return (targets - outputs) / len(targets)
+
 
     #ニューラルネットワークの学習
     def train(self, inputs_list, targets_list):
@@ -39,33 +46,31 @@ class neuralNetwork:
         inputs = np.array(inputs_list, ndmin=2).T
         targets = np.array(targets_list, ndmin=2).T
 
+        #正規化
+        inputs = (inputs - np.mean(inputs)) / np.std(inputs)
+
         # 隠れ層に入ってくる信号の計算
-        hidden_inputs = np.dot(self.wih, inputs)
-        
-        # 隠れ層で結合された信号を活性化関数により出力
+        hidden_inputs = np.dot(self.wih, inputs) + self.bias_h
         hidden_outputs = self.activation_function(hidden_inputs)
 
         # 出力層に入ってくる信号の計算
-        final_inputs = np.dot(self.who, hidden_outputs)
-
-        # 出力層で結合された信号を出力
+        final_inputs = np.dot(self.who, hidden_outputs) + self.bias_o
         final_outputs = self.activation_function(final_inputs)
-
+        
         # 出力層の誤差　＝（目標出力ー最終出力）
-        output_errors = targets - final_outputs
-
-        # loss
-        # self.loss = self.mse_loss(targets, final_outputs) >> 
+        output_errors = self.mse_loss(targets, final_outputs)
         
         # 隠れ層の誤差は出力層の誤差をリンクの重みの割合で分配
         hidden_errors = np.dot(self.who.T, output_errors)
-            
+        
         # 隠れ層と出力層の間のリンクの重みを更新
         self.who += self.lr * np.dot((output_errors * final_outputs * (1.0 - final_outputs)), hidden_outputs.T)
-
+        self.bias_o += self.lr * output_errors  # 出力層バイアス更新
+        
         # 入力層と隠れ層の間のリンクの重みを更新
         self.wih += self.lr * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), inputs.T)
-        
+        self.bias_h += self.lr * hidden_errors  # 隠れ層バイアス更新
+
         pass
     
     #ニューラルネットワークの照会
@@ -81,7 +86,7 @@ class neuralNetwork:
         # 出力層に入ってくる信号の計算
         final_inputs = np.dot(self.who, hidden_outputs)
         # 出力層で結合された信号を活性化関数により出力
-        final_outputs = self.activation_function(final_inputs)*100
+        final_outputs = final_inputs
         
         return final_outputs
     
