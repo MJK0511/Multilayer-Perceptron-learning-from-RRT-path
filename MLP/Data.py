@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 
 class TrainingData():
     def __init__(self):

@@ -1,4 +1,5 @@
 import numpy as np
+from Adam import Adam
 
 class neuralNetwork:
     #ニューラルネットワークの初期化
@@ -11,8 +12,8 @@ class neuralNetwork:
         # リンクの重み行列wih(weights input hidden)とwho(weights hidden output)
         # 行列内の重みw_i_j, ノードiから次の層のノードjへのリンクの重み
         # He
-        self.wih = np.random.randn(self.hnodes, self.inodes) * np.sqrt(2.0 / self.inodes)
-        self.who = np.random.randn(self.onodes, self.hnodes) * np.sqrt(2.0 / self.hnodes)
+        self.wih = np.random.randn(self.hnodes, self.inodes) * np.sqrt(1.0 / self.inodes)
+        self.who = np.random.randn(self.onodes, self.hnodes) * np.sqrt(1.0 / self.hnodes)
 
         #bias 
         self.bias_h = np.zeros((self.hnodes, 1))
@@ -23,6 +24,10 @@ class neuralNetwork:
 
         # 活性化関数 
         self.activation_function = self.identity
+
+        # Adam optimizer for weights
+        self.optimizer_wih = Adam(self.wih.shape, learning_rate=self.lr)
+        self.optimizer_who = Adam(self.who.shape, learning_rate=self.lr)
 
         pass
     
@@ -63,11 +68,14 @@ class neuralNetwork:
         hidden_errors = np.dot(self.who.T, output_errors)
         
         # 隠れ層と出力層の間のリンクの重みを更新
-        self.who += self.lr * np.dot((output_errors * final_outputs * (1.0 - final_outputs)), hidden_outputs.T)
+        # self.who += self.lr * np.dot((output_errors * final_outputs * (1.0 - final_outputs)), hidden_outputs.T)
+        self.wih += self.optimizer_wih.update(np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), inputs.T))
         self.bias_o += self.lr * output_errors  # 出力層バイアス更新
+
         
         # 入力層と隠れ層の間のリンクの重みを更新
-        self.wih += self.lr * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), inputs.T)
+        # self.wih += self.lr * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), inputs.T)
+        self.who += self.optimizer_who.update(np.dot((output_errors * final_outputs * (1.0 - final_outputs)), hidden_outputs.T))
         self.bias_h += self.lr * hidden_errors  # 隠れ層バイアス更新
 
         pass
@@ -85,7 +93,8 @@ class neuralNetwork:
         # 出力層に入ってくる信号の計算
         final_inputs = np.dot(self.who, hidden_outputs)
         # 出力層で結合された信号を活性化関数により出力
-        final_outputs = final_inputs
+        final_outputs = abs(np.round(final_inputs))
         
         return final_outputs
+    
     

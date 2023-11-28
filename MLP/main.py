@@ -14,7 +14,7 @@ input_nodes = 4
 hidden_nodes = 4
 output_nodes = 2
 learning_rate = 0.00001
-epochs = 10
+epochs = 20
 
 n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
