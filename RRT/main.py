@@ -12,12 +12,10 @@ map_height = 100
 start = (random.randint(1, 20), random.randint(1, 20))
 goal = (random.randint(80, 99), random.randint(80, 99))
 
-waypoint_count = 7
-
 world_map = WorldMap(map_width, map_height)
 
 rrt = RRT(world_map, start)
-path = rrt.plan_path(goal, waypoint_count)
+path = rrt.plan_path(goal)
 
 if path:
     print("Path : [y,x]")

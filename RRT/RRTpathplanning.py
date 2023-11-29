@@ -134,7 +134,7 @@ class RRT:
 
     #パス生成
     #step_sizeでwaypointの数を調整できる
-    def plan_path(self, goal, waypoint_count, max_iter=10000, step_size=25, ):
+    def plan_path(self, goal, max_iter=10000, step_size=20):
         for _ in range(max_iter):
             #ランダムな点 (x_rand, y_rand) を生成
             x_rand, y_rand = self.generate_random_point()
@@ -164,24 +164,17 @@ class RRT:
             #新しいノードが目標に十分に近い場合、目標ノードをツリーに追加し、計画されたパスを返す
             if np.sqrt((new_node.x - goal[0])**2 + (new_node.y - goal[1])**2) < step_size:
                 goal_node = self.add_node(goal[1], goal[0], new_node)
-                return self.extract_path(goal_node, waypoint_count)
-            
-            if len(n.children) >= waypoint_count:
-                return self.extract_path(n, waypoint_count)
+                return self.extract_path(goal_node)
     
 
         return None
 
     #パスを抽出
-    def extract_path(self, goal_node, waypoint_count):
+    def extract_path(self, goal_node):
         path = []
         current_node = goal_node
-        waypoints_added = 0
-
-        while current_node is not None and waypoints_added < waypoint_count:
+        while current_node is not None:
             path.append((current_node.y, current_node.x))
             current_node = current_node.parent
-            waypoints_added += 1
-
         return path[::-1]
     

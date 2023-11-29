@@ -13,7 +13,9 @@ class TrainingData():
         train_file_path = os.path.join(train_directory, 'training_output_data.csv')
         self.train_output_data = pd.read_csv(train_file_path)
         self.train_output_data = self.train_output_data[['mx', 'my',]]
-
+    
+    def normalize_test_data(self, mean, std):
+        self.train_input_data = (self.train_input_data - mean) / std
 
 class TestData():
     def __init__(self):
