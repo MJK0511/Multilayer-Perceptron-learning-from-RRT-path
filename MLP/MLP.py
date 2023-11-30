@@ -14,7 +14,6 @@ class neuralNetwork:
         # He
         self.wih = np.random.randn(self.hnodes, self.inodes) * np.sqrt(1.0 / self.inodes)
         self.who = np.random.randn(self.onodes, self.hnodes) * np.sqrt(1.0 / self.hnodes)
-
         #bias 
         self.bias_h = np.zeros((self.hnodes, 1))
         self.bias_o = np.zeros((self.onodes, 1))
@@ -23,12 +22,11 @@ class neuralNetwork:
         self.lr = learningrate
 
         # 活性化関数 
-        self.activation_function = self.identity
+        self.activation_function = self.sigmoid
 
         # Adam optimizer for weights
         self.optimizer_wih = Adam(self.wih.shape, learning_rate=self.lr)
         self.optimizer_who = Adam(self.who.shape, learning_rate=self.lr)
-
         pass
     
     def sigmoid(self, x):
@@ -41,8 +39,9 @@ class neuralNetwork:
         return x
     
     def mse_loss(self, targets, outputs):
-        # return np.mean((targets - outputs) **2)
-        return (targets - outputs) / len(targets)
+        result = np.mean((targets - outputs) **2)
+        return np.full((targets.shape[0], 1), result)
+        # return targets - outputs
 
     #ニューラルネットワークの学習
     def train(self, inputs_list, targets_list):
@@ -60,19 +59,18 @@ class neuralNetwork:
         # 出力層に入ってくる信号の計算
         final_inputs = np.dot(self.who, hidden_outputs) + self.bias_o
         final_outputs = self.activation_function(final_inputs)
-        
-        # 出力層の誤差　＝（目標出力ー最終出力）
+       
+        # 出力層の誤差
         output_errors = self.mse_loss(targets, final_outputs)
-        
+
         # 隠れ層の誤差は出力層の誤差をリンクの重みの割合で分配
         hidden_errors = np.dot(self.who.T, output_errors)
-        
+
         # 隠れ層と出力層の間のリンクの重みを更新
         # self.who += self.lr * np.dot((output_errors * final_outputs * (1.0 - final_outputs)), hidden_outputs.T)
         self.wih += self.optimizer_wih.update(np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), inputs.T))
         self.bias_o += self.lr * output_errors  # 出力層バイアス更新
 
-        
         # 入力層と隠れ層の間のリンクの重みを更新
         # self.wih += self.lr * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), inputs.T)
         self.who += self.optimizer_who.update(np.dot((output_errors * final_outputs * (1.0 - final_outputs)), hidden_outputs.T))
@@ -93,7 +91,8 @@ class neuralNetwork:
         # 出力層に入ってくる信号の計算
         final_inputs = np.dot(self.who, hidden_outputs)
         # 出力層で結合された信号を活性化関数により出力
-        final_outputs = abs(np.round(self.activation_function(final_inputs)))
+        # final_outputs = abs(np.round(self.activation_function(final_inputs)))
+        final_outputs = self.activation_function(final_inputs)*100
         
         return final_outputs
     

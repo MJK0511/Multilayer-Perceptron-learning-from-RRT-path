@@ -15,7 +15,7 @@ input_nodes = 4
 hidden_nodes = 30
 output_nodes = 2
 learning_rate = 0.00001
-epochs = 20
+epochs = 30
 
 n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
@@ -37,4 +37,4 @@ for i in range(test_inputs.shape[0]):
     test_input = test_inputs[i, :]  # 각 행에 대한 데이터를 선택
     test_output = n.query(test_input).T
     print(f"Test Input {i+1}: {test_input}")
-    print(f"Test Output: ({test_output[0, 0]}  {test_output[0, 1]})")
+    print(f"Test Output: ({test_output})")
