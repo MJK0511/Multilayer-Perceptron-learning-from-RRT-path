@@ -92,7 +92,7 @@ class neuralNetwork:
         final_inputs = np.dot(self.who, hidden_outputs)
         # 出力層で結合された信号を活性化関数により出力
         # final_outputs = abs(np.round(self.activation_function(final_inputs)))
-        final_outputs = self.activation_function(final_inputs)*100
+        final_outputs = np.round(self.activation_function(final_inputs)*100)
         
         return final_outputs
     

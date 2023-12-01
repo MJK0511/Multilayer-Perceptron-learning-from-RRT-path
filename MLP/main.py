@@ -1,8 +1,8 @@
 from MLP import neuralNetwork
-from Data import TrainingData, TestData
+from Data import call_LD, call_TD
 
 #学習データ準備
-traindata = TrainingData()
+traindata = call_LD()
 train_inputs = traindata.train_input_data[['sx', 'sy', 'gx', 'gy']].values
 mean = train_inputs.mean(axis=0)
 std = train_inputs.std(axis=0)
@@ -28,7 +28,7 @@ for epoch in range(epochs):
 
 
 #テストデータ準備
-testdata = TestData()
+testdata = call_TD()
 testdata.normalize_test_data(mean, std)
 test_inputs = testdata.test_data[['sx', 'sy', 'gx', 'gy']].values
 
