@@ -1,8 +1,7 @@
 import os
 import pandas as pd
-import numpy as np
 
-class TrainingData():
+class call_LD():
     def __init__(self):
         # CSVファイルのディレクトリー
         train_directory = r"C:\MJ\github\training_path"
@@ -14,15 +13,10 @@ class TrainingData():
         self.train_output_data = pd.read_csv(train_file_path)
         self.train_output_data = self.train_output_data[['mx', 'my',]]
     
-    def normalize_test_data(self, mean, std):
-        self.train_input_data = (self.train_input_data - mean) / std
-
-class TestData():
+class call_TD():
     def __init__(self):
         test_directory = r"C:\MJ\github\test_path"
         test_file_path = os.path.join(test_directory, 'test_input_data.csv')
         self.test_data = pd.read_csv(test_file_path)
-        self.test_input = self.test_data[['sx', 'sy', 'gx', 'gy']].values
-
-    def normalize_test_data(self, mean, std):
-        self.test_input = (self.test_input - mean) / std
+        self.test_data = self.test_data[['sx', 'sy', 'gx', 'gy']].values
+        
