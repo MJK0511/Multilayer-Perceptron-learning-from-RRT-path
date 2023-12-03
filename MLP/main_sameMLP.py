@@ -4,7 +4,9 @@ from Data import call_LD, call_TD
 mlp_instance = MLP3rd()
 
 # 学習
-learningdata = call_LD()
+input_filename = 'training_input_data.csv'
+output_filename = 'training_output_data.csv'
+learningdata = call_LD(input_filename, output_filename)
 mlp_instance.LearningData(learningdata)
 mlp_instance.Learning()
 

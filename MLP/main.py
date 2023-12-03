@@ -1,40 +1,48 @@
-from MLP import neuralNetwork
+from Training import MLP3rd
 from Data import call_LD, call_TD
+mlp_instance1 = MLP3rd()
+mlp_instance2 = MLP3rd()
+mlp_instance3 = MLP3rd()
 
-#学習データ準備
-traindata = call_LD()
-train_inputs = traindata.train_input_data[['sx', 'sy', 'gx', 'gy']].values
-mean = train_inputs.mean(axis=0)
-std = train_inputs.std(axis=0)
-traindata.normalize_test_data(mean, std)
+######################################
+# 学習
 
-train_outputs = traindata.train_output_data[['mx', 'my']].values
+#MLP1
+input_filename1 = 'learning_input_data_m1.csv'
+output_filename1 = 'learning_output_data_m1.csv'
+learningdata1 = call_LD(input_filename1, output_filename1)
+mlp_instance1.LearningData(learningdata1)
+mlp_instance1.Learning()
 
-# ニューラルネットワークの構成
-input_nodes = 4
-hidden_nodes = 30
-output_nodes = 2
-learning_rate = 0.00001
-epochs = 30
+#MLP2
+input_filename2 = 'learning_input_data_m2.csv'
+output_filename2 = 'learning_output_data_m2.csv'
+learningdata2 = call_LD(input_filename2, output_filename2)
+mlp_instance2.LearningData(learningdata2)
+mlp_instance2.Learning()
 
-n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
+# #MLP3
+input_filename3 = 'learning_input_data_m3.csv'
+output_filename3 = 'learning_output_data_m3.csv'
+learningdata3 = call_LD(input_filename3, output_filename3)
+mlp_instance3.LearningData(learningdata3)
+mlp_instance3.Learning()
 
-# データ学習
-for epoch in range(epochs):
-    for i in range(len(train_inputs)):
-        inputs = train_inputs[i]
-        targets = train_outputs[i]
-        n.train(inputs, targets)
-
-
-#テストデータ準備
-testdata = call_TD()
-testdata.normalize_test_data(mean, std)
-test_inputs = testdata.test_data[['sx', 'sy', 'gx', 'gy']].values
-
+######################################
 # テスト
-for i in range(test_inputs.shape[0]):
-    test_input = test_inputs[i, :]  # 각 행에 대한 데이터를 선택
-    test_output = n.query(test_input).T
-    print(f"Test Input {i+1}: {test_input}")
-    print(f"Test Output: ({test_output})")
+testdata = call_TD()
+
+#MLP1
+testdata1 = testdata.test_data
+print("Result1")
+result1 = mlp_instance1.TestData(testdata1)
+
+#MLP2
+test_data_df2 = mlp_instance2.TestDataRE(result1[0])
+print("Result2")
+result2 = mlp_instance2.TestData(test_data_df2)
+
+# #MLP3
+test_data_df3 = mlp_instance3.TestDataRE(result1[1])
+print("Result3")
+result3 = mlp_instance3.TestData(test_data_df3)

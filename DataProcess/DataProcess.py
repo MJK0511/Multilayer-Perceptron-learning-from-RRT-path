@@ -16,7 +16,7 @@ class ProcessCSV:
             df = pd.read_csv(file_path)
 
             # Extract information from the DataFrame
-            start, middle_value, goal = self.extract_information(df)
+            start, middle_value, goal = self.extract_middle3(df)  ### ここを修正して抽出する中点を変える
 
             # Create new DataFrames
             input_df = self.create_input_dataframe(start, goal)
@@ -28,29 +28,32 @@ class ProcessCSV:
 
         # Save combined DataFrames to CSV
         self.save_to_csv(filename1, filename2)
-
-    def extract_information(self, df):
-        start = df.iloc[0]
-        middle = self.middle2(df)
-        goal = df.iloc[-1]
-        return start, middle, goal
     
-    def middle1(self, df):
+    # 始点 m1 終点
+    def extract_middle1(self, df):
+        start = df.iloc[0]
         middle_index = len(df) // 2
         middle_value = df.iloc[middle_index] if len(df) % 2 == 1 else df.iloc[middle_index - 1]
-        return middle_value
+        goal = df.iloc[-1]
+        return start, middle_value, goal
     
-    def middle2(self, df):
+    # 始点 m2 m1
+    def extract_middle2(self, df):
+        start = df.iloc[0]
         middle_index1 = len(df) // 2
         middle_index2 = middle_index1 // 2
         middle_value = df.iloc[middle_index2] if len(df) % 2 == 1 else df.iloc[middle_index2 - 1]
-        return middle_value
+        goal = df.iloc[middle_index1] if len(df) % 2 == 1 else df.iloc[middle_index1 - 1]
+        return start, middle_value, goal
     
-    def middle3(self, df):
+    # m1 m3 終点
+    def extract_middle3(self, df):
         middle_index1 = len(df) // 2
+        start = df.iloc[middle_index1] if len(df) % 2 == 1 else df.iloc[middle_index1 - 1]
         middle_index3 = middle_index1 + (middle_index1//2)
         middle_value = df.iloc[middle_index3] if len(df) % 2 == 1 else df.iloc[middle_index3 - 1]
-        return middle_value
+        goal = df.iloc[-1]
+        return start, middle_value, goal
          
     def create_input_dataframe(self, start, goal):
         return pd.DataFrame({

@@ -2,14 +2,14 @@ import os
 import pandas as pd
 
 class call_LD():
-    def __init__(self):
+    def __init__(self, infilename, outfilename):
         # CSVファイルのディレクトリー
         train_directory = r"C:\MJ\github\training_path"
-        train_file_path = os.path.join(train_directory, 'training_input_data.csv')
+        train_file_path = os.path.join(train_directory, infilename)
         self.train_input_data = pd.read_csv(train_file_path)
         self.train_input_data = self.train_input_data[['sx', 'sy', 'gx', 'gy']]
 
-        train_file_path = os.path.join(train_directory, 'training_output_data.csv')
+        train_file_path = os.path.join(train_directory, outfilename)
         self.train_output_data = pd.read_csv(train_file_path)
         self.train_output_data = self.train_output_data[['mx', 'my',]]
     
