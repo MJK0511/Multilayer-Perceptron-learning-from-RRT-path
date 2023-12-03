@@ -5,8 +5,8 @@ if __name__ == "__main__":
     input_directory = r'/home/nishidalab07/github/RRT_path/test'
     output_directory = r'/home/nishidalab07/github/test_path'
 
-    input_filename = 'test_input_data2.csv'
-    output_filename = 'test_output_data2.csv'
+    input_filename = 'test_input_data.csv'
+    output_filename = 'test_output_data.csv'
 
     # Create an instance of the ProcessCSV class
     processor = ProcessCSV(input_directory, output_directory)
