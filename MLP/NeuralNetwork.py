@@ -3,7 +3,7 @@ from Adam import Adam
 
 class neuralNetwork:
     #ニューラルネットワークの初期化
-    def __init__(self, inputnodes, hiddennodes, outputnodes, learningrate):
+    def __init__(self, inputnodes, hiddennodes, hiddenlayers, outputnodes, learningrate):
         # 入力層、隠れ層、出力層のノード数設定
         self.inodes = inputnodes
         self.hnodes = hiddennodes
@@ -95,5 +95,11 @@ class neuralNetwork:
         final_outputs = np.round(self.activation_function(final_inputs)*100)
         
         return final_outputs
+    
+    def add_hidden_layer(self, nodes):
+        new_weights = np.random.randn(nodes, self.hnodes) * np.sqrt(1.0 / self.hnodes)
+        self.who = np.vstack([self.who, new_weights])
+        self.bias_h = np.vstack([self.bias_h, np.zeros((nodes, 1))])
+        self.hnodes = nodes
     
     

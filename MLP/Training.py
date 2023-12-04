@@ -8,6 +8,7 @@ class MLP3rd:
     def __init__(self):
         self.input_nodes = 4
         self.hidden_nodes = 30
+        self.hidden_layers = 4
         self.output_nodes = 2
         self.learning_rate = 0.00001
         self.epochs = 30
@@ -22,7 +23,10 @@ class MLP3rd:
 
     def Learning(self):
         # データ学習
-        self.n = neuralNetwork(self.input_nodes, self.hidden_nodes, self.output_nodes, self.learning_rate)
+        self.n = neuralNetwork(self.input_nodes, self.hidden_nodes, self.hidden_layers, self.output_nodes, self.learning_rate)
+        for _ in range(self.hidden_layers - 1):
+            self.n.add_hidden_layer(self.hidden_nodes)
+
         for self.epoch in range(self.epochs):
             for i in range(len(self.train_inputs)):
                 inputs = self.train_inputs[i]

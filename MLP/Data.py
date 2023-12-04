@@ -14,9 +14,9 @@ class call_LD():
         self.train_output_data = self.train_output_data[['mx', 'my',]]
     
 class call_TD():
-    def __init__(self):
+    def __init__(self, infilename):
         test_directory = r"C:\MJ\github\test_path"
-        test_file_path = os.path.join(test_directory, 'test_input_data.csv')
+        test_file_path = os.path.join(test_directory, infilename)
         self.test_data = pd.read_csv(test_file_path)
         self.test_data = self.test_data[['sx', 'sy', 'gx', 'gy']].values
         
