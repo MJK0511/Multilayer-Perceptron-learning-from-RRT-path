@@ -24,8 +24,6 @@ class MLP3rd:
     def Learning(self):
         # データ学習
         self.n = neuralNetwork(self.input_nodes, self.hidden_nodes, self.hidden_layers, self.output_nodes, self.learning_rate)
-        for _ in range(self.hidden_layers - 1):
-            self.n.add_hidden_layer(self.hidden_nodes)
 
         for self.epoch in range(self.epochs):
             for i in range(len(self.train_inputs)):
