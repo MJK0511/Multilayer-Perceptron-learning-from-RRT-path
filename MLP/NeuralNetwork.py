@@ -56,12 +56,9 @@ class neuralNetwork:
         # 隠れ層に入ってくる信号の計算
         hidden_inputs1 = np.dot(self.wih1, inputs) + self.bias_h1
         hidden_outputs1 = self.activation_function(hidden_inputs1)
-        
 
         hidden_inputs2 = np.dot(self.wih2, hidden_outputs1) + self.bias_h2
-        print(hidden_inputs2.shape) #(30,30)
         hidden_outputs2 = self.activation_function(hidden_inputs2)
-        # print(hidden_outputs2.shape) #(30,30)
 
         # 出力層に入ってくる信号の計算
         final_inputs = np.dot(self.who, hidden_outputs2) + self.bias_o
@@ -80,7 +77,6 @@ class neuralNetwork:
         self.wih1 += self.optimizer_wih.update(np.dot((hidden_errors1 * hidden_outputs1 * (1.0 - hidden_outputs1)), inputs.T))
         self.wih2 += self.optimizer_wih.update(np.dot((hidden_errors2 * hidden_outputs2 * (1.0 - hidden_outputs2)), hidden_outputs1.T))
 
-        
         self.bias_o += self.lr * output_errors  # 出力層バイアス更新
 
         # 入力層と隠れ層の間のリンクの重みを更新
