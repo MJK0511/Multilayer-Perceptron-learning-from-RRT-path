@@ -1,5 +1,4 @@
 import numpy as np
-from Adam import Adam
 
 class neuralNetwork:
     #ニューラルネットワークの初期化
@@ -13,11 +12,7 @@ class neuralNetwork:
         self.initialize_weights_and_biases()    # 重みとバイアスの初期化
         self.lr = learningrate                  # 学習率の設定
         self.activation_function = self.sigmoid # 活性化関数 
-
-        # Adam optimizer for weights
-        self.optimizer_wih = Adam(self.wih1.shape, learning_rate=self.lr)
-        self.optimizer_who = Adam(self.who.shape, learning_rate=self.lr)
-
+        self.activation_function_q = self.relu # query 活性化関数 
         pass
     
     #ニューラルネットワークの学習
@@ -26,8 +21,6 @@ class neuralNetwork:
         inputs = np.array(inputs_list, ndmin=2).T
         targets = np.array(targets_list, ndmin=2).T
 
-        #正規化
-        inputs = (inputs - np.mean(inputs)) / np.std(inputs)
 
         # 隠れ層に入ってくる信号の計算
         hidden_inputs1 = np.dot(self.wih1, inputs) + self.bias_h1
@@ -94,8 +87,9 @@ class neuralNetwork:
         # 出力層に入ってくる信号の計算
         final_inputs = np.dot(self.who, hidden_outputs)
         # 出力層で結合された信号を活性化関数により出力
-        # final_outputs = abs(np.round(self.activation_function(final_inputs)))
+        # final_outputs = abs((self.activation_function_q(final_inputs)))
         final_outputs = np.round(self.activation_function(final_inputs)*100)
+
         
         return final_outputs
     
@@ -106,6 +100,9 @@ class neuralNetwork:
     def identity(self, x):
         return x
     
+    def relu(self, x):
+        return np.maximum(0, x)
+    
     def mse_loss(self, targets, outputs):
         result = np.mean((targets - outputs) **2)
         return np.full((targets.shape[0], 1), result)
@@ -113,7 +110,8 @@ class neuralNetwork:
     def initialize_weights_and_biases(self):
         # 初期化関数
         def initialize_matrix(rows, cols):
-            return np.random.randn(rows, cols) * np.sqrt(1.0 / cols)
+            # return np.random.randn(rows, cols) * np.sqrt(1.0 / cols)
+            return np.random.randn(rows, cols) * np.sqrt(2.0 / (rows + cols))
 
         # 重みとバイアスの初期化
         for i in range(1, self.hlayers + 2):

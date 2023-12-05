@@ -2,7 +2,8 @@ from NeuralNetwork import neuralNetwork
 import numpy as np 
 
 def normalize_data(data, mean, std):
-    return (data - mean) / std
+    normalized_data = (data - mean) / std
+    return normalized_data
 
 class MLP3rd:
     def __init__(self):
@@ -18,7 +19,7 @@ class MLP3rd:
         self.train_inputs = learningdata.train_input_data[['sx', 'sy', 'gx', 'gy']].values
         self.mean = self.train_inputs.mean(axis=0)
         self.std = self.train_inputs.std(axis=0)
-        normalize_data(self.train_inputs, self.mean, self.std)
+        self.train_inputs = normalize_data(self.train_inputs, self.mean, self.std)
         self.train_outputs = learningdata.train_output_data[['mx', 'my']].values
 
     def Learning(self):

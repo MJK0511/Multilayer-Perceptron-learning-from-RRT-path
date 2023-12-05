@@ -22,7 +22,8 @@ class ImageMap:
 
     def visualize_map(self):
         self.timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # Format: YYYYMMDDHHMMSS
-        filename_ts = os.path.join("C:\MJ\github\RRT_path", f"map_{self.timestamp}.png")
+        # filename_ts = os.path.join("C:\MJ\github\RRT_path", f"map_{self.timestamp}.png")
+        filename_ts = os.path.join("/home/nishidalab07/github/RRT_path", f"map_{self.timestamp}.png")
 
         fig = plt.figure(figsize=(6, 6))
         canvas = FigureCanvas(fig)

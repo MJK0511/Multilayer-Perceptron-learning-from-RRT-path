@@ -134,7 +134,7 @@ class RRT:
 
     #パス生成
     #step_sizeでwaypointの数を調整できる
-    def plan_path(self, goal, max_iter=10000, step_size=20):
+    def plan_path(self, goal, max_iter=10000, step_size=16):
         for _ in range(max_iter):
             #ランダムな点 (x_rand, y_rand) を生成
             x_rand, y_rand = self.generate_random_point()

@@ -30,7 +30,8 @@ if path:
     image_map.visualize_map()
 
     # ディレクトリーとファイル名を指定
-    filename_csv = os.path.join("C:\MJ\github\RRT_path", f"coordinates_f{image_map.timestamp}.csv")
+    # filename_csv = os.path.join("C:\MJ\github\RRT_path", f"coordinates_f{image_map.timestamp}.csv")
+    filename_csv = os.path.join("/home/nishidalab07/github/RRT_path", f"coordinates_f{image_map.timestamp}.csv")
 
     with open(filename_csv, 'w', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
