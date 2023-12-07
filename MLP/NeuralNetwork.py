@@ -12,7 +12,7 @@ class neuralNetwork:
         self.initialize_weights_and_biases()    # 重みとバイアスの初期化
         self.lr = learningrate                  # 学習率の設定
         self.activation_function = self.sigmoid # 活性化関数 
-        self.activation_function_q = self.relu # query 活性化関数 
+        # self.activation_function_q = self.relu # query 活性化関数 
         pass
     
     #ニューラルネットワークの学習
@@ -20,7 +20,6 @@ class neuralNetwork:
         #入力値とターゲット値を2D配列に変換
         inputs = np.array(inputs_list, ndmin=2).T
         targets = np.array(targets_list, ndmin=2).T
-
 
         # 隠れ層に入ってくる信号の計算
         hidden_inputs1 = np.dot(self.wih1, inputs) + self.bias_h1
@@ -90,7 +89,6 @@ class neuralNetwork:
         # final_outputs = abs((self.activation_function_q(final_inputs)))
         final_outputs = np.round(self.activation_function(final_inputs)*100)
 
-        
         return final_outputs
     
 

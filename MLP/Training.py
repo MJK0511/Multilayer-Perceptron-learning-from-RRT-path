@@ -32,6 +32,11 @@ class MLP3rd:
                 targets = self.train_outputs[i]
                 self.n.train(inputs, targets)
 
+            # 손실(MSE) 계산 및 출력
+            predictions = [self.n.query(inp) for inp in self.train_inputs]
+            mse = np.mean([(t - o) ** 2 for t, o in zip(self.train_outputs, predictions)])
+            print(f"Mean Squared Error: {mse}")
+
     def TestData(self, testdata):
         #テストデータ準備
         testdata2 = []

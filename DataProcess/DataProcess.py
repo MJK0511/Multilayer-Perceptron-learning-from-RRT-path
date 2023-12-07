@@ -16,7 +16,7 @@ class ProcessCSV:
             df = pd.read_csv(file_path)
 
             # Extract information from the DataFrame
-            start, middle_value, goal = self.extract_middle3(df)  ### ここを修正して抽出する中点を変える
+            start, middle_value, goal = self.extract_middle1(df)  ### ここを修正して抽出する中点を変える
 
             # Create new DataFrames
             input_df = self.create_input_dataframe(start, goal)
