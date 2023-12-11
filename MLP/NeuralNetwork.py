@@ -12,7 +12,7 @@ class neuralNetwork:
         self.initialize_weights_and_biases()    # 重みとバイアスの初期化
         self.lr = learningrate                  # 学習率の設定
         self.activation_function = self.sigmoid # 活性化関数 
-        # self.activation_function_q = self.relu # query 活性化関数 
+        
         pass
     
     #ニューラルネットワークの学習

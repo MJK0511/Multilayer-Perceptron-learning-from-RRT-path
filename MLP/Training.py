@@ -11,8 +11,8 @@ class MLP3rd:
         self.hidden_nodes = 30
         self.hidden_layers = 4
         self.output_nodes = 2
-        self.learning_rate = 0.00001
-        self.epochs = 30
+        self.learning_rate = 0.0001
+        self.epochs = 10000
     
     def LearningData(self, learningdata):
         #学習データ準備
@@ -35,7 +35,7 @@ class MLP3rd:
             # 손실(MSE) 계산 및 출력
             predictions = [self.n.query(inp) for inp in self.train_inputs]
             mse = np.mean([(t - o) ** 2 for t, o in zip(self.train_outputs, predictions)])
-            print(f"Mean Squared Error: {mse}")
+            # print(f"Mean Squared Error: {mse}")
 
     def TestData(self, testdata):
         #テストデータ準備
